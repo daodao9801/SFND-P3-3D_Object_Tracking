@@ -191,7 +191,9 @@ Top three detector/descriptor combinations of **FAST/BRIEF, ORB/BRIEF and ORB/BR
 
 During computing the Camera-TTC , median was used.  It is possible for two successive frames that previous median is equal to current median, and this will have a result TTC=NAN.  I set the parameters  `imgEndIndex = 40` and `imgStepWidth = 2`  which stands for computing TTC every two images. The results were computed in my [results.xlsx](./results.xlsx).
 
+
 <div align=center><img src="./README.assets/TTC_vs_frames.png" alt="TTC_vs_frames.png" align=center /> </div>
+
 
 From above chart, we can see that the TTC change trend is decreasing with the frames. I used `minXpoint`  of lidar measurements between previous frame and current frame to compute TTC, even though `pcl::StatisticalOutlierRemoval` was used to remove outliers,  the result is fluctuate greatly especially on frame 34. If we only make use of lidar point to compute TTC, this will result in faulty measurement. That is the reason the lidar measurements are inaccurate with white noise,  and we can get more accurate result by filtering the noise with **Kalman Filter**. 
 
