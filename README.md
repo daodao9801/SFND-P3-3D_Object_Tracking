@@ -79,7 +79,7 @@ void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bb
 
 ## Part2 : Compute Lidar-based TTC
 
-By searching for the closest points  in the point cloud associated with  `lidarPointsPrev`and in the point cloud associated with `lidarPointsCurr`, the TTC is computed based on the the closest points. Before computing the TTC,  [`StatisticalOutlierRemoval` ](http://pointclouds.org/documentation/tutorials/statistical_outlier.php)of PCL library was used to remove the outliers of Lidar point cloud.  At the same time, I revised the original [ `CMakeList.txt`]()  of the project so as to run the PCL library in my project.
+By searching for the closest points  in the point cloud associated with  `lidarPointsPrev`and in the point cloud associated with `lidarPointsCurr`, the TTC is computed based on the the closest points. Before computing the TTC,  [`StatisticalOutlierRemoval` ](http://pointclouds.org/documentation/tutorials/statistical_outlier.php)of PCL library was used to remove the outliers of Lidar point cloud.  At the same time, I revised the original [ `CMakeList.txt`](./CMakeLists.txt)  of the project so as to run the PCL library in my project.
 
 ```C++
 // This function is used to remove LidarPoint outliers before computing TTC.
@@ -192,6 +192,7 @@ Top three detector/descriptor combinations of **FAST/BRIEF, ORB/BRIEF and ORB/BR
 During computing the Camera-TTC , median was used.  It is possible for two successive frames that previous median is equal to current median, and this will have a result TTC=NAN.  I set the parameters  `imgEndIndex = 40` and `imgStepWidth = 2`  which stands for computing TTC every two images. The results were computed in my [results.xlsx](./results.xlsx).
 
 <div align=center><img src="./README.assets/TTC_vs_frames.png" alt="TTC_vs_frames.png" align=center /> </div>
+
 From above chart, we can see that the TTC change trend is decreasing with the frames. I used `minXpoint`  of lidar measurements between previous frame and current frame to compute TTC, even though `pcl::StatisticalOutlierRemoval` was used to remove outliers,  the result is fluctuate greatly especially on frame 34. If we only make use of lidar point to compute TTC, this will result in faulty measurement. That is the reason the lidar measurements are inaccurate with white noise,  and we can get more accurate result by filtering the noise with **Kalman Filter**. 
 
 Besides, TTC only based on camera is also not accurate enough. When the preceding car is more and more close to the ego car, the `matchBoundingBoxes` gives a big wrong result like the below image. When the bounding boxes overlaps a lot with each other, the function `matchBoundingBoxes` becomes invalid. I have tried my best , but have not found a valid way. Both TTC-computed methods are not enough when considering the Z dimensions which means the road is not flat. The algorithm computing TTC based on Lidar and camera is derived from Plane Trigonometry. If the road is not flat. the algorithm is invalid. 
